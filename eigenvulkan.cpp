@@ -18,7 +18,7 @@ int main(void) {
         printf("%f\n", ret.norm());
     }
     XrMatrix4x4f resultM;
-    XrMatrix4x4f_CreateProjectionFov(&resultM, GRAPHICS_VULKAN, XrFovf{-45,45,-45,45},0.1, 100.0);
+    XrMatrix4x4f_CreateProjectionFov(&resultM, GRAPHICS_VULKAN, XrFovf{-45,45,-45,45},0.1, 12.0);
     {
         Eigen::Matrix3f basisTest;
         basisTest <<
@@ -55,16 +55,21 @@ int main(void) {
     {
         Matrix4f project(resultM.m);
         cout << "project det = " << project.determinant() << endl;
-        Vector4f v(-1, 2, -10, 1);
-        Vector4f projectedV = project * v;
-        cout << "projectedV" << endl;
-        cout << projectedV << endl;
-        cout << "perspective division" << endl;
-        cout << projectedV / projectedV.w() << endl;
+        Vector4f projectedV;
+        for(int i = -20; i < 20; ++i) {
+            Vector4f v(-1, 2, i, 1);
+            projectedV = project * v;
+            cout << "projectedV : " << i << endl;
+            cout << projectedV << endl;
+            cout << "perspective division : " << i << endl;
+            cout << projectedV / projectedV.w() << endl;
+        }
+
+
+
+
         Matrix4f projectInv = project.inverse();
         Vector4f restoredV = projectInv * projectedV;
-        cout << "v" << endl;
-        cout << v << endl;
         cout << "restoredV" << endl;
         cout << restoredV << endl;
     }
@@ -116,4 +121,126 @@ int main(void) {
         m1 << m1ihat, m1jhat;
         cout << m1.determinant() << endl;
     }
+    {
+        cout << "Inverse matrices, column space and null space | Chapter 7, Essence of linear algebra" << endl;
+        Matrix3f A;
+        Vector3f ret;
+        A << 2,4,1,5,0,3,3,8,0;
+        ret << -3, 0, 2;
+        cout << A.inverse() << endl << ret << endl;
+
+        cout << A.inverse() * ret << endl;
+        cout << "column space ,null space, kernel" << endl;
+    }
+    {
+        cout << "Dot products and duality | Chapter 9, Essence of linear algebra" << endl;
+        Vector2f V{4,1};
+        Vector2f W{2,-1};
+        float LofProjectedVMulLofW = V.dot(W);
+        float LofProjectedV = LofProjectedVMulLofW / W.norm();
+        cout << W.norm() << endl;
+        cout << LofProjectedVMulLofW << endl;
+        cout << LofProjectedV << endl;
+
+    }
+    {
+        cout << "Chapter 12" << endl;
+        Vector3f i{-4,-1, -4};
+        Vector3f j{2,0, 6};
+        Vector3f k{3,2,-9};
+        Vector3f V{7,-8,3};
+        Vector3f X;
+        Matrix3f A, B;
+        A << i, j ,k;
+        B << V, j, k;
+        float x = B.determinant() / A.determinant();
+        B << i, V, k;
+        float y = B.determinant() / A.determinant();
+        B << i, j, V;
+        float z = B.determinant() / A.determinant();
+        X << x,y,z;
+        cout << X.format(vectorFmt) << endl;
+        cout << (A.inverse() * V).format(vectorFmt) << endl;
+        cout << (A.colPivHouseholderQr().solve(V)).format(vectorFmt) << endl;
+    }
+    {
+        cout << "Chapter 13" << endl;
+        Vector2f b1{2,1};
+        Vector2f b2{-1,1};
+        Vector2f v1{3,2};
+        Matrix2f jennifer;
+        jennifer << b1, b2;
+        cout << jennifer << endl;
+        cout << jennifer.inverse() * v1 << endl;// 5/3, 1/3
+
+        Vector2f vj{-1,2};
+        cout << jennifer * vj << endl;
+
+        Matrix2f rot;
+        rot << 0,-1,
+                1,0;
+        cout <<  rot  << endl;
+        cout << jennifer.inverse() * rot * (jennifer * vj) << endl;
+
+        Matrix2f our;
+        our.setIdentity();
+        cout << (jennifer.inverse() * rot * jennifer) << endl; // Transform matrix in her language
+        Vector2f vj2{1,2};
+        cout << (jennifer.inverse() * rot * jennifer) *  vj2 << endl; //-1, 1
+    }
+    {
+        cout << "Eigenvectors and eigenvalues  14" << endl;
+        Matrix3f A; //matrix
+        Vector3f eigenVector; //matrix
+        float eigenValue = 1.0f;
+        /**
+         * A * eigenVector == eigenValue * eigenVector;
+         * AV = λV,
+         * AV = (λI)V;
+         * AV -(λI)V = 0;
+         * (A -(λI))V = 0;
+         * Diagonal matrix
+         */
+        {
+            Vector2f diagonalBasisX{-1,0};
+            Vector2f diagonalBasisY{0,2};
+            Matrix2f diagonalMat;
+            diagonalMat << diagonalBasisX, diagonalBasisY;
+        }
+        {
+            Vector2f ihat{3,0};
+            Vector2f jhat{1,2};
+            Matrix2f mat;
+            mat << ihat, jhat;
+            cout << mat * mat << endl;
+
+            Vector2f eigenBasisX{1,0};
+            Vector2f eigenBasisY{-1,1};
+            Matrix2f eigenMat;
+            eigenMat << eigenBasisX, eigenBasisY;
+            //-1 and 2 are eigenValues,
+            Matrix2f diagonalMat = eigenMat.inverse() * mat * eigenMat;
+            cout << diagonalMat << endl;
+            cout << eigenMat * diagonalMat * diagonalMat * eigenMat.inverse() << endl;
+            cout << "mat.eigenvalues() : "<< mat.eigenvalues()  << endl;
+        }
+    }
+    {
+        cout << "Eigenvectors and eigenvalues  15" << endl;
+        /*
+         * product = λ1 * λ2 * λ3 = det(A)
+         * a + e + i == λ1 + λ2 + λ2
+         */
+        Matrix3f eigenMat;
+        eigenMat <<
+        2, 0, 0,
+        0, 3, 4,
+        0, 4, 9;
+        cout << eigenMat.eigenvalues() << endl;
+
+        Vector3f q1(1,0,0), q2(0,1,0), q3(0,0,1);
+        Vector4f r(1.0/3.0, 1.0/3.0, 1.0/3.0, 1);
+        cout << (q2-q1).cross(q3-q1).norm() << endl;
+    }
 }
+
