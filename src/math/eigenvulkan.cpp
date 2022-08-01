@@ -242,5 +242,20 @@ int main(void) {
         Vector4f r(1.0/3.0, 1.0/3.0, 1.0/3.0, 1);
         cout << (q2-q1).cross(q3-q1).norm() << endl;
     }
+    {
+        auto angle = 2.0 * M_PI / 360.0 * 90.0;
+        auto sinA = std::sin(angle / 2);
+        auto cosA = std::cos(angle / 2);
+
+        Eigen::Vector3d v(0, 0, 1.0);
+        Eigen::Quaterniond q;
+        q.vec() = v * sinA;
+        q.w() = cosA;
+        q.normalize();
+        Eigen::Quaterniond v1(0, 1, 1.0, 1);
+        Eigen::Quaterniond rotatedP = q * v1 * q.inverse();
+
+        cout << rotatedP.vec() << endl;
+    }
 }
 
