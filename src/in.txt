@@ -1,0 +1,4 @@
+#include "head.txt.h"
+int main() {
+    return asdf;
+}
