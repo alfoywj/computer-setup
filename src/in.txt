@@ -1,4 +1,7 @@
 #include "head.txt.h"
 int main() {
+    const unsigned int fs_code[] = {
+#include "cube.frag.h"
+    };
     return asdf;
 }

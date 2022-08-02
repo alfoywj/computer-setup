@@ -46,6 +46,7 @@ else()
         set(PLATFORM_DIR "${PROJECT_SOURCE_DIR}/glslang/linux/bin")
     endif()
     find_program(GLSLANG_VALIDATOR NAMES ${GLSLANG_VALIDATOR_NAME} HINTS ${PLATFORM_DIR})
+    message(STATUS "dddp ${GLSLANG_VALIDATOR} ${PLATFORM_DIR}")
 endif()
 
 if(UNIX AND NOT APPLE) # i.e. Linux
