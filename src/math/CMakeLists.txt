@@ -9,8 +9,8 @@ add_executable(eigencalculus eigengame.cpp)
 include_directories(eigencalculus
         ${EIGEN3_INCLUDE_DIR}
         ${Vulkan_INCLUDE_DIR}
-        ../../openxr_includes)
+        ../auxiliary/external/openxr_includes)
 include_directories(eigenvulkan
         ${EIGEN3_INCLUDE_DIR}
         ${Vulkan_INCLUDE_DIR}
-        ../../openxr_includes)
+        ../auxiliary/external/openxr_includes)

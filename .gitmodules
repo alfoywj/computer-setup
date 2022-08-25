@@ -1,0 +1,3 @@
+[submodule "src/auxiliary"]
+	path = src/auxiliary
+	url = git@github.com:alfoywj/auxiliary.git
